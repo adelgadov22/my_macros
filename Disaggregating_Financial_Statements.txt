@@ -1,0 +1,51 @@
+Sub QuitarAcumulacion()
+    Dim Conso As Worksheet
+    Dim Desa As Worksheet
+    Dim UltimaFila As Long
+    Dim UltimaCol As Long
+    Dim i As Long
+    Dim j As Long
+    
+    Set Conso = ThisWorkbook.Sheets("CONSOLIDADO")
+    Set Desa = ThisWorkbook.Sheets("DESACUMULADO")
+    
+    ' Encontrar la última fila de datos en la hoja "CONSOLIDADO"
+    UltimaFila = Conso.Cells(Conso.Rows.Count, 1).End(xlUp).Row
+    
+    ' Recorrer desde la última fila hasta la segunda
+    For i = UltimaFila To 2 Step -1
+        ' Si no es la primera fila y cumple (empresa, ano y mes)
+        If i <> UltimaFila And Conso.Cells(i, 1).Value = Conso.Cells(i + 1, 1).Value And Year(Conso.Cells(i, 2).Value) = Year(Conso.Cells(i + 1, 2).Value) And Month(Conso.Cells(i, 2).Value) < Month(Conso.Cells(i + 1, 2).Value) Then
+            ' Restar los valores de las columnas 3 en adelante
+            For j = 3 To Conso.Cells(i, Conso.Columns.Count).End(xlToLeft).Column
+                If Conso.Cells(i, j).Value > 0 Then
+                    Desa.Cells(i + 1, j).Value = Conso.Cells(i + 1, j).Value - Conso.Cells(i, j).Value
+                    Desa.Cells(i + 1, j).Value = Desa.Cells(i + 1, j).Value * -1
+                    Desa.Cells(i, j).Value = Conso.Cells(i, j).Value
+                ElseIf Conso.Cells(i, j).Value < 0 Then
+                    Desa.Cells(i + 1, j).Value = Conso.Cells(i + 1, j).Value + Conso.Cells(i, j).Value
+                    Desa.Cells(i, j).Value = Conso.Cells(i, j).Value
+                End If
+            Next j
+        Else
+            ' No tiene que desacumularse
+            For j = 3 To Conso.Cells(i, Conso.Columns.Count).End(xlToLeft).Column
+                Desa.Cells(i, j).Value = Conso.Cells(i, j).Value
+            Next j
+        End If
+    Next i
+    
+    'Copiar encabezados
+    UltimaCol = Conso.Cells(1, Conso.Columns.Count).End(xlToLeft).Column
+    
+    Conso.Range(Conso.Cells(1, 1), Conso.Cells(1, UltimaCol)).Copy _
+        Destination:=Desa.Cells(1, 1)
+    
+    'Copiar columna 1 y 2
+     Conso.Range(Conso.Cells(2, 1), Conso.Cells(UltimaFila, 2)).Copy _
+        Destination:=Desa.Cells(2, 1)
+        
+    MsgBox "Datos estan desacumulados."
+    
+End Sub
+

@@ -1,0 +1,272 @@
+Sub CreateFSO()
+Set MyFSO = CreateObject("Scripting.FileSystemObject")
+End Sub
+
+Sub TestFSO()
+CreateFSO
+Dim MyFSO As New FileSystemObject
+End Sub
+
+
+
+Public Sub Sample_Mercado_Update()
+
+    Dim MyFSO As New FileSystemObject
+    Dim ffile As File
+    Dim ffolder As Folder
+    Dim file_loop As Integer
+    Dim dateDaily As Date
+    Dim start As Range
+    
+    Dim diaFolder As FileDialog
+
+    Set fobject = New Scripting.FileSystemObject
+
+    should_macro_run = MsgBox("Esta acción actualizara la base de datos", vbQuestion + vbYesNo + vbDefaultButton2, "¿Desea actualizar la base de datos?")
+    
+    If should_macro_run = vbYes Then
+    
+    '1. Select file folder that contains the reports
+    
+        Set diagFolder = Application.FileDialog(msoFileDialogFolderPicker)
+        diagFolder.AllowMultiSelect = False
+        diagFolder.Show
+        
+        fpath = diagFolder.SelectedItems(1)
+        Set ffolder = fobject.GetFolder(fpath)
+        
+    '2. Loop through each file and get data
+        
+        file_loop = 0
+        
+        '2.0 Clear WorkSheets
+        Worksheets("database").Range("A1").CurrentRegion.Offset(1, 0).ClearContents
+       
+        LoopSubFolders ffolder
+        
+        'Para regresar a la hoja introductoria e informar de la actualizacion
+        Worksheets("intro").Activate
+        result1 = MsgBox("Base de datos actualizada", vbOKOnly, "Resultado")
+
+    Else
+    
+        result2 = MsgBox("Actualizacion Cancelada", vbOKOnly, "Resultado")
+        
+          
+    End If
+
+
+End Sub
+
+Public Sub LoopSubFolders(Folder)
+
+    Dim SubFolder
+    For Each SubFolder In Folder.SubFolders
+        LoopSubFolders SubFolder
+    Next SubFolder
+    
+    Dim ffile
+    
+    For Each ffile In Folder.Files
+    
+    ' Operate the file'
+    
+    '2.1 Get data from source file
+            
+                Workbooks.Open (ffile.Path)
+                
+                file_loop = file_loop + 1
+                dateDaily = Sheets("Daily").Range("G3").Value
+                IHHotel = Sheets("Daily").Range("G2").Value
+                
+                ingresosTorreA = Sheets("Daily").Range("G18").Value
+                ingresosTorreB = Sheets("Daily").Range("G30").Value
+                
+                ingresosAlimentosPromedio = Sheets("Daily").Range("G60").Value
+                
+                ingresosAlimentos = Sheets("Daily").Range("G69").Value
+                
+                ingresosBebidasPromedio = Sheets("Daily").Range("G87").Value
+                
+                ingresosBebidas = Sheets("Daily").Range("G96").Value
+                ingresosOtrosAB = Sheets("Daily").Range("G101").Value
+                ingresosOtrosDep = Sheets("Daily").Range("G112").Value
+                ingresosOtrosIngresos = Sheets("Daily").Range("G119").Value
+                
+                PorcOcupacion = Sheets("Daily").Range("G123").Value
+                TarifasPromedio = Sheets("Daily").Range("G124").Value
+                REVPAR = Sheets("Daily").Range("G125").Value
+                
+                HuespedesCasa = Sheets("Daily").Range("G128").Value
+                PorcDobleOcupacion = Sheets("Daily").Range("G131").Value
+                EjecutivoOcupacion = Sheets("Daily").Range("G132").Value
+                
+                PorcEjecutivoOcupacion = Sheets("Daily").Range("G137").Value
+                
+                '2.1.1 Get the goals form source file
+                
+                ingresosTorreA_goal = Sheets("Daily").Range("H18").Value
+                ingresosTorreB_goal = Sheets("Daily").Range("H30").Value
+                
+                ingresosAlimentosPromedio_goal = Sheets("Daily").Range("H60").Value
+                
+                ingresosAlimentos_goal = Sheets("Daily").Range("H69").Value
+                
+                ingresosBebidasPromedio_goal = Sheets("Daily").Range("H87").Value
+                
+                ingresosBebidas_goal = Sheets("Daily").Range("H96").Value
+                ingresosOtrosAB_goal = Sheets("Daily").Range("H101").Value
+                ingresosOtrosDep_goal = Sheets("Daily").Range("H112").Value
+                ingresosOtrosIngresos_goal = Sheets("Daily").Range("H119").Value
+                
+                PorcOcupacion_goal = Sheets("Daily").Range("H123").Value
+                TarifasPromedio_goal = Sheets("Daily").Range("H124").Value
+                REVPAR_goal = Sheets("Daily").Range("H125").Value
+                
+                HuespedesCasa_goal = Sheets("Daily").Range("H128").Value
+                PorcDobleOcupacion_goal = Sheets("Daily").Range("H131").Value
+                EjecutivoOcupacion_goal = Sheets("Daily").Range("H132").Value
+                
+                PorcEjecutivoOcupacion_goal = Sheets("Daily").Range("H137").Value
+                
+                '2.2.1 Get the real montly accumulated data
+                
+                ingresosTorreA_accumulated = Sheets("Daily").Range("L18").Value
+                ingresosTorreB_accumulated = Sheets("Daily").Range("L30").Value
+                
+                ingresosAlimentosPromedio_accumulated = Sheets("Daily").Range("L60").Value
+                
+                ingresosAlimentos_accumulated = Sheets("Daily").Range("L69").Value
+                
+                ingresosBebidasPromedio_accumulated = Sheets("Daily").Range("L87").Value
+                
+                ingresosBebidas_accumulated = Sheets("Daily").Range("L96").Value
+                ingresosOtrosAB_accumulated = Sheets("Daily").Range("L101").Value
+                ingresosOtrosDep_accumulated = Sheets("Daily").Range("L112").Value
+                ingresosOtrosIngresos_accumulated = Sheets("Daily").Range("L119").Value
+                
+                PorcOcupacion_accumulated = Sheets("Daily").Range("L123").Value
+                TarifasPromedio_accumulated = Sheets("Daily").Range("L124").Value
+                REVPAR_accumulated = Sheets("Daily").Range("L125").Value
+                
+                HuespedesCasa_accumulated = Sheets("Daily").Range("L128").Value
+                PorcDobleOcupacion_accumulated = Sheets("Daily").Range("L131").Value
+                EjecutivoOcupacion_accumulated = Sheets("Daily").Range("L132").Value
+                
+                PorcEjecutivoOcupacion_accumulated = Sheets("Daily").Range("L137").Value
+                
+                '2.2.2 Get thegoal montly accumulated data
+                
+                ingresosTorreA_accumulated_goal = Sheets("Daily").Range("M18").Value
+                ingresosTorreB_accumulated_goal = Sheets("Daily").Range("M30").Value
+                
+                ingresosAlimentosPromedio_accumulated_goal = Sheets("Daily").Range("M60").Value
+                
+                ingresosAlimentos_accumulated_goal = Sheets("Daily").Range("M69").Value
+                
+                ingresosBebidasPromedio_accumulated_goal = Sheets("Daily").Range("M87").Value
+                
+                ingresosBebidas_accumulated_goal = Sheets("Daily").Range("M96").Value
+                ingresosOtrosAB_accumulated_goal = Sheets("Daily").Range("M101").Value
+                ingresosOtrosDep_accumulated_goal = Sheets("Daily").Range("M112").Value
+                ingresosOtrosIngresos_accumulated_goal = Sheets("Daily").Range("M119").Value
+                
+                PorcOcupacion_accumulated_goal = Sheets("Daily").Range("M123").Value
+                TarifasPromedio_accumulated_goal = Sheets("Daily").Range("M124").Value
+                REVPAR_accumulated_goal = Sheets("Daily").Range("M125").Value
+                
+                HuespedesCasa_accumulated_goal = Sheets("Daily").Range("M128").Value
+                PorcDobleOcupacion_accumulated_goal = Sheets("Daily").Range("M131").Value
+                EjecutivoOcupacion_accumulated_goal = Sheets("Daily").Range("M132").Value
+                
+                PorcEjecutivoOcupacion_accumulated_goal = Sheets("Daily").Range("M137").Value
+                
+                
+                'Close workbook
+                ActiveWorkbook.Close
+            
+            '2.2 Copy data to database
+                Worksheets("database").Activate
+                Set start = Range("A1").Offset(Range("A1").CurrentRegion.Rows.Count, 0)
+                
+                
+                start.Offset(0, 0).Value = dateDaily
+                start.Offset(0, 1).Value = IHHotel
+                
+                start.Offset(0, 2).Value = ingresosTorreA
+                start.Offset(0, 3).Value = ingresosTorreB
+                start.Offset(0, 4).Value = ingresosAlimentos
+                start.Offset(0, 5).Value = ingresosBebidas
+                start.Offset(0, 6).Value = ingresosOtrosAB
+                start.Offset(0, 7).Value = ingresosOtrosDep
+                start.Offset(0, 8).Value = ingresosOtrosIngresos
+                start.Offset(0, 9).Value = PorcOcupacion
+                start.Offset(0, 10).Value = TarifasPromedio
+                start.Offset(0, 11).Value = REVPAR
+                start.Offset(0, 12).Value = HuespedesCasa
+                start.Offset(0, 13).Value = PorcDobleOcupacion
+                start.Offset(0, 14).Value = EjecutivoOcupacion
+                start.Offset(0, 15).Value = PorcEjecutivoOcupacion
+                start.Offset(0, 16).Value = ingresosAlimentosPromedio
+                start.Offset(0, 17).Value = ingresosBebidasPromedio
+                
+                '2.2.1 Copy goal data to database
+                start.Offset(0, 18).Value = ingresosTorreA_goal
+                start.Offset(0, 19).Value = ingresosTorreB_goal
+                start.Offset(0, 20).Value = ingresosAlimentos_goal
+                start.Offset(0, 21).Value = ingresosBebidas_goal
+                start.Offset(0, 22).Value = ingresosOtrosAB_goal
+                start.Offset(0, 23).Value = ingresosOtrosDep_goal
+                start.Offset(0, 24).Value = ingresosOtrosIngresos_goal
+                start.Offset(0, 25).Value = PorcOcupacion_goal
+                start.Offset(0, 26).Value = TarifasPromedio_goal
+                start.Offset(0, 27).Value = REVPAR_goal
+                start.Offset(0, 28).Value = HuespedesCasa_goal
+                start.Offset(0, 29).Value = PorcDobleOcupacion_goal
+                start.Offset(0, 30).Value = EjecutivoOcupacion_goal
+                start.Offset(0, 31).Value = PorcEjecutivoOcupacion_goal
+                start.Offset(0, 32).Value = ingresosAlimentosPromedio_goal
+                start.Offset(0, 33).Value = ingresosBebidasPromedio_goal
+                
+                '2.2.2 Copy real accumulated data to database
+                start.Offset(0, 34).Value = ingresosTorreA_accumulated
+                start.Offset(0, 35).Value = ingresosTorreB_accumulated
+                start.Offset(0, 36).Value = ingresosAlimentos_accumulated
+                start.Offset(0, 37).Value = ingresosBebidas_accumulated
+                start.Offset(0, 38).Value = ingresosOtrosAB_accumulated
+                start.Offset(0, 39).Value = ingresosOtrosDep_accumulated
+                start.Offset(0, 40).Value = ingresosOtrosIngresos_accumulated
+                start.Offset(0, 41).Value = PorcOcupacion_accumulated
+                start.Offset(0, 42).Value = TarifasPromedio_accumulated
+                start.Offset(0, 43).Value = REVPAR_accumulated
+                start.Offset(0, 44).Value = HuespedesCasa_accumulated
+                start.Offset(0, 45).Value = PorcDobleOcupacion_accumulated
+                start.Offset(0, 46).Value = EjecutivoOcupacion_accumulated
+                start.Offset(0, 47).Value = PorcEjecutivoOcupacion_accumulated
+                start.Offset(0, 48).Value = ingresosAlimentosPromedio_accumulated
+                start.Offset(0, 49).Value = ingresosBebidasPromedio_accumulated
+                
+                '2.2.3 Copy goal accumulated data to database
+                
+                start.Offset(0, 50).Value = ingresosTorreA_accumulated_goal
+                start.Offset(0, 51).Value = ingresosTorreB_accumulated_goal
+                start.Offset(0, 52).Value = ingresosAlimentos_accumulated_goal
+                start.Offset(0, 53).Value = ingresosBebidas_accumulated_goal
+                start.Offset(0, 54).Value = ingresosOtrosAB_accumulated_goal
+                start.Offset(0, 55).Value = ingresosOtrosDep_accumulated_goal
+                start.Offset(0, 56).Value = ingresosOtrosIngresos_accumulated_goal
+                start.Offset(0, 57).Value = PorcOcupacion_accumulated_goal
+                start.Offset(0, 58).Value = TarifasPromedio_accumulated_goal
+                start.Offset(0, 59).Value = REVPAR_accumulated_goal
+                start.Offset(0, 60).Value = HuespedesCasa_accumulated_goal
+                start.Offset(0, 61).Value = PorcDobleOcupacion_accumulated_goal
+                start.Offset(0, 62).Value = EjecutivoOcupacion_accumulated_goal
+                start.Offset(0, 63).Value = PorcEjecutivoOcupacion_accumulated_goal
+                start.Offset(0, 64).Value = ingresosAlimentosPromedio_accumulated_goal
+                start.Offset(0, 65).Value = ingresosBebidasPromedio_accumulated_goal
+                
+    
+    Next ffile
+
+End Sub
+
