@@ -1,0 +1,63 @@
+Option Explicit
+
+Sub Promedios()
+    Dim Desa As Worksheet
+    Dim Promedio As Worksheet
+    Dim UltimaCol As Long
+    Dim UltimaFila As Long
+    Dim i As Long
+    Dim j As Long
+    Dim Mes As Long
+    Dim a As Long
+    
+    Set Desa = ThisWorkbook.Sheets("DESACUMULADO")
+    Set Promedio = ThisWorkbook.Sheets.Add
+    Promedio.Name = "PROMEDIOS"
+    
+    UltimaFila = Desa.Cells(Desa.Rows.Count, 1).End(xlUp).Row
+    UltimaCol = Desa.Cells(1, Desa.Columns.Count).End(xlToLeft).Column
+    
+    ' Copiar encabezados
+    Desa.Range(Desa.Cells(1, 1), Desa.Cells(1, UltimaCol)).Copy _
+        Destination:=Promedio.Cells(1, 1)
+    
+    ' Copiar columna 1 y 2
+    Desa.Range(Desa.Cells(2, 1), Desa.Cells(UltimaFila, 2)).Copy _
+        Destination:=Promedio.Cells(2, 1)
+    
+    For i = UltimaFila To 1 Step -1
+    'Misma cuenta/empresa
+        If Desa.Cells(i, 1).Value = Desa.Cells(i + 1, 1).Value Then
+            ' Calcular el valor absoluto de la diferencia entre los meses
+            Mes = Abs(Month(Desa.Cells(i + 1, 2).Value) - Month(Desa.Cells(i, 2).Value))
+            ' Evitar división por cero
+            If Mes <> 0 Then
+                For j = 3 To UltimaCol
+                    a = Desa.Cells(i + 1, j).Value
+                    Promedio.Cells(i + 1, j).Value = a / Mes
+                Next j
+            'Si la dif es anual por lo que Mes = 0 entonces debe de ser entre 12 meses
+            ElseIf Mes = 0 And Year(Desa.Cells(i + 1, 2).Value) <> Year(Desa.Cells(i, 2).Value) Then
+                For j = 3 To UltimaCol
+                    Mes = 12
+                    a = Desa.Cells(i + 1, j).Value
+                    Promedio.Cells(i + 1, j).Value = a / Mes
+                Next j
+            End If
+        Else
+        'Cuenta/empresa diferente
+            If Month(Desa.Cells(i + 1, 2).Value) <> 0 Then
+                For j = 3 To UltimaCol
+                    Promedio.Cells(i + 1, j).Value = Desa.Cells(i + 1, j).Value / Month(Desa.Cells(i + 1, 2).Value)
+                Next j
+            End If
+        End If
+    Next i
+    
+    'Aplicar formato
+    Promedio.Range(Promedio.Cells(2, 3), Promedio.Cells(UltimaFila, UltimaCol)).NumberFormat = "$#,##0.00"
+    ' Ajustar columnas
+    Promedio.Columns("A:ZZ").AutoFit
+End Sub
+
+
